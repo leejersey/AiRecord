@@ -37,10 +37,12 @@ async def transcribe_audio(audio_path: str) -> dict:
     """
     settings = get_settings()
 
-    # Web 端录音为 webm 格式，需要转码为 wav
+    # 非 wav 格式需要转码为 wav（火山引擎 ASR 仅可靠支持 wav/pcm）
     actual_path = audio_path
-    if audio_path.endswith(".webm"):
-        actual_path = await _convert_webm_to_wav(audio_path)
+    ext = audio_path.rsplit('.', 1)[-1].lower()
+    if ext in ('m4a', 'aac', 'webm', 'ogg', 'mp3', 'flac'):
+        actual_path = await _convert_to_wav(audio_path)
+        logger.info(f"{ext} → wav 转码完成: {actual_path}")
 
     # 获取音频时长
     duration = await _get_audio_duration(actual_path)
@@ -216,25 +218,27 @@ async def _split_audio(audio_path: str, chunk_seconds: int) -> list[str]:
     return chunks
 
 
-async def _convert_webm_to_wav(webm_path: str) -> str:
-    """将 webm 格式转换为 wav（用于 ASR）"""
+async def _convert_to_wav(src_path: str) -> str:
+    """将任意音频格式转换为 wav（16kHz 单声道 PCM，用于 ASR）"""
     import asyncio
     ffmpeg_bin = _find_ffmpeg()
 
-    wav_path = webm_path.rsplit(".", 1)[0] + ".wav"
+    wav_path = src_path.rsplit(".", 1)[0] + ".wav"
     try:
         proc = await asyncio.create_subprocess_exec(
-            ffmpeg_bin, "-y", "-i", webm_path, "-ar", "16000", "-ac", "1", wav_path,
+            ffmpeg_bin, "-y", "-i", src_path,
+            "-ar", "16000", "-ac", "1", "-acodec", "pcm_s16le",
+            wav_path,
             stdout=asyncio.subprocess.DEVNULL,
-            stderr=asyncio.subprocess.DEVNULL,
+            stderr=asyncio.subprocess.PIPE,
         )
-        await proc.wait()
+        _, stderr = await proc.communicate()
         if proc.returncode != 0:
+            logger.error(f"ffmpeg 转码失败: {stderr.decode()}")
             raise RuntimeError(f"ffmpeg 转码失败，返回码: {proc.returncode}")
-        logger.info(f"webm → wav 转码完成: {wav_path}")
         return wav_path
     except FileNotFoundError:
-        raise RuntimeError("未安装 ffmpeg，无法转码 webm 音频文件")
+        raise RuntimeError("未安装 ffmpeg，无法转码音频文件")
 
 
 def _get_audio_format(audio_path: str) -> str:

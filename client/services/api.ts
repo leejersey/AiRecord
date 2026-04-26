@@ -16,10 +16,11 @@ const DEV_API_URL = Platform.OS === 'web'
   : `http://${LOCAL_IP}:8000/api`;
 
 // 生产环境：服务器地址
-const PROD_API_URL = 'http://119.91.198.219/api';
+const PROD_API_URL = 'http://43.136.43.80/api';
 
-// 自动选择
-const API_URL = __DEV__ ? DEV_API_URL : PROD_API_URL;
+// 自动选择（设置 USE_PROD=true 可在开发模式连线上）
+const USE_PROD = true;
+const API_URL = (!__DEV__ || USE_PROD) ? PROD_API_URL : DEV_API_URL;
 
 console.log(`📡 API → ${API_URL} (${__DEV__ ? 'DEV' : 'PROD'})`);
 
