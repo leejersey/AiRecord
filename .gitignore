@@ -1,0 +1,114 @@
+# ============================================
+# AiRecord .gitignore
+# ============================================
+
+# -------- 通用 --------
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+*~
+*.bak
+
+# -------- Python / 后端 --------
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+*.whl
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# 虚拟环境
+server/venv/
+server/.venv/
+venv/
+.venv/
+
+# 环境变量（含密钥，绝不入库）
+server/.env
+.env
+.env.local
+.env.production
+.env.*.local
+
+# SQLite 数据库
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# ChromaDB 向量数据
+server/app/chroma_data/
+
+# 上传的音频文件
+server/uploads/
+
+# 日志
+server/logs/
+
+# -------- Node / 前端 --------
+node_modules/
+
+# Expo
+client/.expo/
+client/dist/
+client/web-build/
+
+# 生成的原生项目
+client/ios/
+client/android/
+
+# Expo 自动生成（不需入库）
+client/expo-env.d.ts
+
+# Metro bundler
+*.jsbundle
+*.hbc
+.metro-health-check*
+
+# 调试日志
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# TypeScript 构建信息
+*.tsbuildinfo
+
+# 锁文件（可选，若团队统一用 npm 则保留 package-lock.json）
+# client/package-lock.json
+
+# -------- 构建产物 --------
+*.tgz
+*.tar.gz
+*.zip
+
+# -------- 部署（含服务器 IP，不入库）--------
+deploy/
+docker-compose.yml
+server/.dockerignore
+
+# -------- IDE --------
+.vscode/
+.idea/
+*.code-workspace
+*.sublime-*
+
+# -------- Gemini / Agent --------
+.agent/
+.gemini/
+implementation_plan.md
+task.md
+walkthrough.md
+
+# -------- Git --------
+# 前端子目录独立的 .git（如有）
+client/.git/
