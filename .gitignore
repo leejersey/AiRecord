@@ -112,3 +112,5 @@ walkthrough.md
 # -------- Git --------
 # 前端子目录独立的 .git（如有）
 client/.git/
+
+deploy_guide.md
